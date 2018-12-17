@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>地点关键字 + 驾车路线规划</title>
+
+    </div>
+    <input id="geo" type="button" class="btn" value="Next " />
+</div>
+
+   </div>
+    <input id='count' disabled type="text">
+</div>
+
+   </div>
+    <input id='pro' disabled type="text">
+</div>
+
+   </div>
+    <input id='pos1' disabled type="text">
+</div>
+
+   </div>
+    <input id='pos2' disabled type="text">
+</div>
+   </div>
+    <input id='route' disabled type="text">
+</div>
+
+
+
+    <style type="text/css">
+    html,
+    body,
+    #container {
+      width: 100%;
+      height: 100%;
+    }
+    </style>
+    <style type="text/css">
+        #panel {
+            position: fixed;
+            background-color: white;
+            max-height: 90%;
+            overflow-y: auto;
+            top: 10px;
+            right: 10px;
+            width: 280px;
+        }
+        #panel .amap-call {
+            background-color: #009cf9;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+        #panel .amap-lib-driving {
+          border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+            overflow: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.11&key=9f37070383303f76108ade4eb5a917e4&plugin=AMap.Driving"></script>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<div id="panel"></div>
+<script type="text/javascript">
+    //基本地图加载
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],//地图中心点
+        zoom: 13 //地图显示的缩放级别
+    });
+
+    var csv_length;
+    var csvdatas;
+
+    //获取csv对象
+    d3.csv("demo_1.csv",function(error,csvdata){  
+
+    if(error){  
+        console.log(error);  
+    }  
+    console.log(csvdata);  
+    csv_length = csvdata.length;
+    csvdatas = csvdata;
+    });
+/*
+    //输出csv内容
+    for( var i=0; i<csvdata.length; i++ ){  
+        var day = csvdata[i].day;  
+        var close = csvdata[i].close;  
+        var pe = csvdata[i].pe;  
+        var pep = csvdata[i].pep;  
+        var p20 = csvdata[i].p20;  
+        var p50 = csvdata[i].p50;  
+        var p80 = csvdata[i].p80;  
+        document.write(
+            "name:" + day + "," +  
+            "close:" + close + "," +
+            "pe:" + pe + "," +  
+            "pep:" + pep + "," +  
+            "p20:" + p20 + "," +  
+            "p50:" + p50 + "," +  
+            "p80:" + p80 +"<br />" 
+            );  
+    }
+}); 
+*/
+
+    var driver,marker;
+    var province = "杭州";
+    var pos1 = "杭州东站";
+    var pos2 = "杭州西湖";
+    var province2 = "北京";
+    var pos3 = "北京大学";
+    var pos4 = "西二旗";
+    /*
+    var fso;
+    try { 
+    fso=new ActiveXObject("Scripting.FileSystemObject"); 
+    } catch (e) { 
+    alert("当前浏览器不支持");
+    return;
+    } 
+    var f1 = fso.createtextfile("C:\\sers\\ys\\Desktop\\gaode1.txt",true);
+    <!-- ...获取file... -->
+
+    f1.write("这是您创建的一个文本文档"); 
+    <!-- 全部写入，不包括回车符 -->
+    f1.writeLine("这是您创建的一个文本文档"); 
+    <!-- 写入一行 -->   
+*/
+
+    var count = 0;
+    function Driver() {
+
+     for(var i=0; i<csv_length; i++){  
+       if(!driver){
+            driver = new AMap.Driving({
+            map: map,
+            panel: "panel",
+            policy:AMap.DrivingPolicy.LEAST_DISTANCE
+            }); 
+        }
+    
+    province = csvdatas[i].province;
+    pos1 = csvdatas[i].pos1;
+    pos2 = csvdatas[i].pos2;
+    document.getElementById("pro").value = province;
+    document.getElementById("pos1").value = pos1;
+    document.getElementById("pos2").value = pos2;
+
+     // 根据起终点名称规划驾车导航路线
+    driver.search([
+        {keyword: pos1,city:province},
+        {keyword: pos2,city:province}
+    ], function(status, result) {
+        // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
+        if (status === 'complete') {
+            document.getElementById("route").value = result.routes[0].distance;
+            console.log(result.routes[0].distance);
+          
+            log.success('绘制驾车路线完成');
+        } else {
+            console.log("该行获取最短距离失败,请确认起始点或者终点是否存在");
+            log.error('获取驾车数据失败：' + result);
+        }
+    });
+  
+}
+  //  count++;
+  //  document.getElementById("count").value = count;
+
+  }
+
+  document.getElementById("geo").onclick = Driver;
+
+</script>
+</body>
+</html>

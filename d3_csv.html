@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>地点关键字 + 驾车路线规划</title>
+<body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script>
+//获取csv对象
+d3.csv("demo_1.csv",function(error,csvdata){  
+
+    if(error){  
+        console.log(error);  
+    }  
+    console.log(csvdata);  
+    
+    //输出csv内容
+    for( var i=0; i<csvdata.length; i++ ){  
+        var day = csvdata[i].province;  
+        var close = csvdata[i].pos1;  
+        var pe = csvdata[i].pos2;  
+        /*
+        var pep = csvdata[i].pep;  
+        var p20 = csvdata[i].p20;  
+        var p50 = csvdata[i].p50;  
+        var p80 = csvdata[i].p80;  
+        */
+        document.write(
+            "name:" + day + "," +  
+            "close:" + close + "," +
+            "pe:" + pe + "," +  "<br />" 
+            );  
+    }
+});  
+</script>
+
+</body>
+
+</html>
+<!--
+//将csv数据转换为字符串
+<script>
+    d3.csv("399905.XSHE.PEP.csv",function(error,csvdata){       
+        var str = d3.csv.format( csvdata );           
+        console.log(str.length);  
+        console.log(str);     
+    }); 
+</script>
+-->
+

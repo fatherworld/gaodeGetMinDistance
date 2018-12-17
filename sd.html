@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>两点间距离</title>
+     <link rel="stylesheet" href="href.css" />
+    <style>
+        html,body,#container{
+            height:100%;
+        }
+    </style>
+
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+</head>
+<body>
+<div id="container"></div>
+<div class='info' style='min-width:15rem;'>可拖动Marker调整位置</div>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.11&key=9f37070383303f76108ade4eb5a917e4"></script>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+             
+     var name_title='';
+     var begin_count='';
+     var long1 = "";
+     var Dimen1 = "";
+     var text5;
+
+     $(function (){
+     
+        $.getJSON("result.json", function (data){
+         
+          //清空内容 
+          $.each(data, function (infoIndex, info){
+            if(infoIndex == 1)
+            {
+                text5.setText('p1, p2两点相距米');
+                long1 = info['longitude'];
+                Dimen1 = info['The_Dimension'];
+            }
+          }) 
+         
+      }) 
+    })
+   
+
+    //初始化地图对象，加载地图
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        zoom: 13
+    });
+    var m1 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position: new AMap.LngLat(116.368904, 39.923423)
+    });
+    var m2 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position:new AMap.LngLat(116.387271, 39.922501)
+    });
+
+    var m3 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position:new AMap.LngLat(116.386271, 39.923201)
+    });
+
+    map.setFitView();
+    
+    var line1,text1,line,text;
+    function computeDis(){
+        var p1 = m1.getPosition();
+        var p2 = m2.getPosition();
+        var p3 = m3.getPosition();
+
+        var textPos = p1.divideBy(2).add(p2.divideBy(2));
+        var textPos1 = p3.divideBy(2).add(p2.divideBy(2));
+        var distance = Math.round(p1.distance(p2));
+        var distance1 = Math.round(p3.distance(p2));
+        var path = [p1,p2];
+        var path2 = [p2,p3];
+        if(!line){
+            line = new AMap.Polyline({
+           		map:map,
+              	strokeColor:'#80d8ff',
+              	isOutline:true,
+              	outlineColor:'white',
+                path:path
+            });
+        }else{
+            line.setPath(path);
+        }
+        if(!text){
+            text = new AMap.Text({
+              	text:'两点相距'+distance+'米',
+                position: textPos,
+                map:map,
+              	style:{'background-color':'#29b6f6',
+        				'border-color':'#e1f5fe',
+        				'font-size':'12px'}
+            })
+        }else{
+            text.setText('p1, p2两点相距'+distance+'米')
+            text.setPosition(textPos)
+        }
+
+        if(!line1){
+            line1 = new AMap.Polyline({
+                map:map,
+                strokeColor:'#80d8ff',
+                isOutline:true,
+                outlineColor:'white',
+                path:path2
+            });
+        }else{
+            line1.setPath(path2);
+        }
+        if(!text1){
+            text1 = new AMap.Text({
+                text:'p2,p3两点相距'+distance1+'米',
+                position: textPos1,
+                map:map,
+                style:{'background-color':'#29b6f6',
+                        'border-color':'#e1f5fe',
+                        'font-size':'12px'}
+            })
+        }else{
+            text1.setText('p2, p3两点相距'+distance1+'米')
+            text1.setPosition(textPos1)
+        }
+
+
+    }
+    computeDis();
+
+    m1.on('dragging', computeDis)
+    m2.on('dragging', computeDis)
+    m3.on('dragging', computeDis)
+
+</script>
+</body>
+</html>

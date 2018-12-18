@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -137,10 +137,10 @@
     <!-- 写入一行 -->   
 */
 
-    var count = 0;
+    //let count = 0;
     function Driver() {
 
-     for(var i=0; i<csv_length; i++){  
+     for(let i=0; i<csv_length; i++){  
        if(!driver){
             driver = new AMap.Driving({
             map: map,
@@ -148,7 +148,9 @@
             policy:AMap.DrivingPolicy.LEAST_DISTANCE
             }); 
         }
-    
+		
+		  // console.log(count+"存在");
+  
     province = csvdatas[i].province;
     pos1 = csvdatas[i].pos1;
     pos2 = csvdatas[i].pos2;
@@ -165,12 +167,12 @@
         if (status === 'complete') {
             document.getElementById("route").value = result.routes[0].distance;
             console.log(result.routes[0].distance);
-          
             log.success('绘制驾车路线完成');
+			          
         } else {
-            console.log("该行获取最短距离失败,请确认起始点或者终点是否存在");
+			console.log(i+"行获取最短距离失败,请确认该行起始点或者终点是否存在");
             log.error('获取驾车数据失败：' + result);
-        }
+        }	
     });
   
 }
